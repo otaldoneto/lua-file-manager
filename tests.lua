@@ -5,7 +5,7 @@ local FileManager = require("file_manager")
 local test_file = "test_output.tmp"
 local manager = FileManager.new(test_file)
 
--- Garantir um ambiente limpo antes de iniciar
+-- Ensure a clean environment before starting.
 if manager:exists() then
     manager:delete()
 end
@@ -14,67 +14,67 @@ local function assert_equal(actual, expected, test_name)
     if actual == expected then
         print("  [PASSED] " .. test_name)
     else
-        print("  [FAILED] " .. test_name .. " | Esperado: " .. tostring(expected) .. ", Recebido: " .. tostring(actual))
+        print("  [FAILED] " .. test_name .. " | Expected: " .. tostring(expected) .. ", Received: " .. tostring(actual))
         os.exit(1)
     end
 end
 
 local function assert_error_response(ok, err, test_name)
-    assert_equal(ok, false, test_name .. " deve falhar")
-    assert_equal(type(err), "string", test_name .. " deve retornar uma mensagem de erro")
+    assert_equal(ok, false, test_name .. " should fail")
+    assert_equal(type(err), "string", test_name .. " should return an error message")
 end
 
 print("=========================================")
-print("🧪 RODANDO SUÍTE DE TESTES DO FILE MANAGER")
+print("🧪 RUNNING FILE MANAGER TEST SUITE")
 print("=========================================\n")
 
--- Teste 1: Existência em arquivo inexistente
-assert_equal(manager:exists(), false, "Arquivo nao deve existir inicialmente")
+-- Test 1: Nonexistent file
+assert_equal(manager:exists(), false, "File should not exist initially")
 
--- Teste 2: Escrita
-local ok_write = manager:write("Linha Teste 1\n")
-assert_equal(ok_write, true, "Escrita de arquivo deve ser bem-sucedida")
-assert_equal(manager:exists(), true, "Arquivo deve existir apos escrita")
+-- Test 2: Write
+local ok_write = manager:write("Test Line 1\n")
+assert_equal(ok_write, true, "File write should succeed")
+assert_equal(manager:exists(), true, "File should exist after writing")
 
--- Teste 3: Anexo (Append)
-local ok_append = manager:append("Linha Teste 2\n")
-assert_equal(ok_append, true, "Anexo de texto deve ser bem-sucedido")
+-- Test 3: Append
+local ok_append = manager:append("Test Line 2\n")
+assert_equal(ok_append, true, "Content append should succeed")
 
--- Teste 4: Leitura completa
+-- Test 4: Full read
 local content = manager:read_all()
-assert_equal(content, "Linha Teste 1\nLinha Teste 2\n", "Leitura completa deve retornar o conteudo correto")
+assert_equal(content, "Test Line 1\nTest Line 2\n", "Full read should return the correct content")
 
--- Teste 5: Leitura de linhas
+-- Test 5: Line-by-line read
 local lines = manager:read_lines()
-assert_equal(#lines, 2, "Arquivo deve conter exatamente 2 linhas")
-assert_equal(lines[1], "Linha Teste 1", "Conteudo da primeira linha correto")
-assert_equal(lines[2], "Linha Teste 2", "Conteudo da segunda linha correto")
+assert_equal(#lines, 2, "File should contain exactly two lines")
+assert_equal(lines[1], "Test Line 1", "First line content should be correct")
+assert_equal(lines[2], "Test Line 2", "Second line content should be correct")
 
--- Teste 6: Tamanho do arquivo
+-- Test 6: File size
 local size = manager:get_size()
-assert_equal(size > 0, true, "Tamanho do arquivo deve ser maior que 0 bytes")
+assert_equal(size > 0, true, "File size should be greater than zero bytes")
 
--- Teste 7: Validacao de conteudo invalido
+-- Test 7: Invalid content validation
 local ok_invalid_write, invalid_write_err = manager:write(nil)
-assert_error_response(ok_invalid_write, invalid_write_err, "Escrita com conteudo invalido")
+assert_error_response(ok_invalid_write, invalid_write_err, "Write with invalid content")
 
 local ok_invalid_append, invalid_append_err = manager:append({})
-assert_error_response(ok_invalid_append, invalid_append_err, "Anexo com conteudo invalido")
+assert_error_response(ok_invalid_append, invalid_append_err, "Append with invalid content")
 
--- Teste 8: Erro de leitura em arquivo inexistente
-local missing_manager = FileManager.new("arquivo_que_nao_existe.tmp")
+-- Test 8: Read error for a nonexistent file
+local missing_manager = FileManager.new("file_that_does_not_exist.tmp")
 local missing_content, missing_err = missing_manager:read_all()
-assert_equal(missing_content, nil, "Leitura de arquivo inexistente nao deve retornar conteudo")
-assert_equal(type(missing_err), "string", "Leitura de arquivo inexistente deve retornar erro")
+assert_equal(missing_content, nil, "Nonexistent file read should not return content")
+assert_equal(type(missing_err), "string", "Nonexistent file read should return an error")
 
--- Teste 9: Deleção de arquivo
+-- Test 9: File deletion
 local ok_delete = manager:delete()
-assert_equal(ok_delete, true, "Remocao do arquivo deve ser bem-sucedida")
-assert_equal(manager:exists(), false, "Arquivo nao deve existir apos remocao")
+assert_equal(ok_delete, true, "File deletion should succeed")
+assert_equal(manager:exists(), false, "File should not exist after deletion")
 
 local ok_delete_missing, delete_missing_err = manager:delete()
-assert_error_response(ok_delete_missing, delete_missing_err, "Remocao de arquivo inexistente")
+assert_error_response(ok_delete_missing, delete_missing_err, "Deletion of a nonexistent file")
 
 print("\n=========================================")
-print("✨ TODOS OS TESTES PASSARAM COM SUCESSO!")
+print("✨ ALL TESTS PASSED!")
 print("=========================================")

@@ -12,7 +12,7 @@ function FileManager.new(filepath)
     return self
 end
 
--- Verifica se o arquivo existe no sistema
+-- Checks whether the file can be opened for reading.
 function FileManager:exists()
     local file = io.open(self.filepath, "r")
     if file then
@@ -22,100 +22,100 @@ function FileManager:exists()
     return false
 end
 
--- Obtém o tamanho do arquivo em bytes
+-- Gets the file size in bytes.
 function FileManager:get_size()
     local file, err = io.open(self.filepath, "r")
     if not file then
-        return nil, error_message("Erro ao abrir arquivo", err)
+        return nil, error_message("Failed to open file", err)
     end
 
     local size, seek_err = file:seek("end")
     local close_ok, close_err = file:close()
 
     if not size then
-        return nil, error_message("Erro ao obter tamanho do arquivo", seek_err)
+        return nil, error_message("Failed to get file size", seek_err)
     end
     if not close_ok then
-        return nil, error_message("Erro ao fechar arquivo", close_err)
+        return nil, error_message("Failed to close file", close_err)
     end
 
     return size
 end
 
--- Salva ou sobrescreve o conteúdo do arquivo
+-- Saves or overwrites the file contents.
 function FileManager:write(content)
     if type(content) ~= "string" and type(content) ~= "number" then
-        return false, "O conteúdo deve ser uma string ou número."
+        return false, "Content must be a string or number."
     end
 
     local file, err = io.open(self.filepath, "w")
     if not file then
-        return false, error_message("Erro ao abrir arquivo para escrita", err)
+        return false, error_message("Failed to open file for writing", err)
     end
 
     local write_ok, write_err = file:write(content)
     local close_ok, close_err = file:close()
 
     if not write_ok then
-        return false, error_message("Erro ao escrever arquivo", write_err)
+        return false, error_message("Failed to write file", write_err)
     end
     if not close_ok then
-        return false, error_message("Erro ao fechar arquivo", close_err)
+        return false, error_message("Failed to close file", close_err)
     end
 
     return true
 end
 
--- Anexa conteúdo ao final do arquivo
+-- Appends content to the end of the file.
 function FileManager:append(content)
     if type(content) ~= "string" and type(content) ~= "number" then
-        return false, "O conteúdo deve ser uma string ou número."
+        return false, "Content must be a string or number."
     end
 
     local file, err = io.open(self.filepath, "a")
     if not file then
-        return false, error_message("Erro ao abrir arquivo para anexo", err)
+        return false, error_message("Failed to open file for appending", err)
     end
 
     local write_ok, write_err = file:write(content)
     local close_ok, close_err = file:close()
 
     if not write_ok then
-        return false, error_message("Erro ao anexar conteúdo ao arquivo", write_err)
+        return false, error_message("Failed to append content to file", write_err)
     end
     if not close_ok then
-        return false, error_message("Erro ao fechar arquivo", close_err)
+        return false, error_message("Failed to close file", close_err)
     end
 
     return true
 end
 
--- Lê e retorna todo o conteúdo do arquivo
+-- Reads and returns the full file contents.
 function FileManager:read_all()
     local file, err = io.open(self.filepath, "r")
     if not file then
-        return nil, error_message("Erro ao abrir arquivo para leitura", err)
+        return nil, error_message("Failed to open file for reading", err)
     end
 
     local content, read_err = file:read("*a")
     local close_ok, close_err = file:close()
 
     if content == nil then
-        return nil, error_message("Erro ao ler arquivo", read_err)
+        return nil, error_message("Failed to read file", read_err)
     end
     if not close_ok then
-        return nil, error_message("Erro ao fechar arquivo", close_err)
+        return nil, error_message("Failed to close file", close_err)
     end
 
     return content
 end
 
--- Retorna uma tabela com todas as linhas do arquivo
+-- Returns a table containing every line in the file.
 function FileManager:read_lines()
     local lines = {}
     local file, err = io.open(self.filepath, "r")
     if not file then
-        return nil, error_message("Erro ao abrir arquivo", err)
+        return nil, error_message("Failed to open file", err)
     end
 
     while true do
@@ -123,7 +123,7 @@ function FileManager:read_lines()
         if line == nil then
             if read_err then
                 file:close()
-                return nil, error_message("Erro ao ler arquivo", read_err)
+                return nil, error_message("Failed to read file", read_err)
             end
             break
         end
@@ -132,17 +132,17 @@ function FileManager:read_lines()
 
     local close_ok, close_err = file:close()
     if not close_ok then
-        return nil, error_message("Erro ao fechar arquivo", close_err)
+        return nil, error_message("Failed to close file", close_err)
     end
 
     return lines
 end
 
--- Deleta o arquivo do sistema
+-- Deletes the file from the file system.
 function FileManager:delete()
     local ok, err = os.remove(self.filepath)
     if not ok then
-        return false, error_message("Erro ao deletar arquivo", err)
+        return false, error_message("Failed to delete file", err)
     end
 
     return true
