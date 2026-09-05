@@ -1,4 +1,6 @@
 # 📁 Lua File Manager
+![Lua Version](https://img.shields.io/badge/Lua-5.1%2B-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 Um módulo leve e reutilizável em **Lua** para simplificar operações de leitura, escrita e manipulação de arquivos de texto.
 
